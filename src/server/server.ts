@@ -1,5 +1,11 @@
 import express, { Application } from "express";
+import { ZodType } from "zod";
 import { ApiEndpointHandler } from "./handlers/apiHandler";
+import {
+  createBodyValidatorMiddleware,
+  createQueryValidatorMiddleware,
+} from "./middleware/validation";
+import { isWithValue } from "./utils/types";
 
 export interface ServerOptions {
   port?: number;
@@ -30,7 +36,27 @@ function registerApiEndpoint(
   expressApp: Application,
   endpointHandler: ApiEndpointHandler,
 ) {
-  const { path, method, handler } = endpointHandler;
+  if (isWithValue<"querySchema", ZodType>("querySchema", endpointHandler)) {
+    expressApp[endpointHandler.method](
+      endpointHandler.path,
+      createQueryValidatorMiddleware(endpointHandler.querySchema),
+    );
+  }
 
-  expressApp[method](path, handler);
+  if (
+    isWithValue<"requestBodySchema", ZodType>(
+      "requestBodySchema",
+      endpointHandler,
+    )
+  ) {
+    expressApp[endpointHandler.method](
+      endpointHandler.path,
+      createBodyValidatorMiddleware(endpointHandler.requestBodySchema),
+    );
+  }
+
+  expressApp[endpointHandler.method](
+    endpointHandler.path,
+    endpointHandler.handler,
+  );
 }

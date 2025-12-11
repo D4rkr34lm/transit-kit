@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 import z from "zod";
 import { HttpMethod } from "../constants/HttpMethods";
 import { MaybeValue } from "../utils/types";
@@ -14,26 +14,28 @@ type HandlerFromDefinition<
   Definition extends ApiEndpointDefinition<
     string,
     HttpMethod,
-    MaybeValue<"requestBody", z.ZodType>
+    MaybeValue<"requestBodySchema", z.ZodType>,
+    MaybeValue<"querySchema", z.ZodType>
   >,
 > = (
   request: Request<
     ExtractPathParams<Definition["path"]>,
     unknown,
-    Definition extends MaybeValue<"requestBody", infer BodyType>
+    Definition extends MaybeValue<"requestBodySchema", infer BodyType>
       ? z.infer<BodyType>
       : never,
-    Definition extends MaybeValue<"query", infer QueryType>
+    Definition extends MaybeValue<"querySchema", infer QueryType>
       ? z.infer<QueryType>
       : never
   >,
+  response: Response,
 ) => void;
 
 export type ApiEndpointDefinition<
   Path extends string,
   Method extends HttpMethod,
-  RequestBody = MaybeValue<"requestBody", z.ZodType>,
-  Query = MaybeValue<"query", z.ZodType>,
+  RequestBody = MaybeValue<"requestBodySchema", z.ZodType>,
+  Query = MaybeValue<"querySchema", z.ZodType>,
 > = {
   path: Path;
   method: Method;
@@ -44,8 +46,8 @@ export function createApiEndpointHandler<
   EndpointDefinition extends ApiEndpointDefinition<
     string,
     HttpMethod,
-    MaybeValue<"requestBody", z.ZodType>,
-    MaybeValue<"query", z.ZodType>
+    MaybeValue<"requestBodySchema", z.ZodType>,
+    MaybeValue<"querySchema", z.ZodType>
   >,
 >(
   options: EndpointDefinition,

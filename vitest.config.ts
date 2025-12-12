@@ -14,7 +14,6 @@ export default defineConfig({
       include: ["*"],
       reportsDirectory: "../coverage",
       enabled: true,
-      all: false,
       cleanOnRerun: true,
     },
   },

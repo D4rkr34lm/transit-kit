@@ -9,4 +9,7 @@ export default config(eslintVitest.configs.recommended, {
       ...globals.vitest,
     },
   },
+  rules: {
+    "vitest/expect-expect": "off",
+  },
 });

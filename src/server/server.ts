@@ -4,7 +4,7 @@ import { ZodType } from "zod";
 import {
   ApiEndpointHandler,
   buildApiEndpointHandler,
-} from "./handlers/apiHandler";
+} from "./handlers/api/createApiHandler";
 import { buildRequestLogger, buildResponseLogger } from "./middleware/logging";
 import {
   buildBodyValidatorMiddleware,

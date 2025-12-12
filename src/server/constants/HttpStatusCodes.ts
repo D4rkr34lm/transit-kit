@@ -25,6 +25,14 @@ export const ServerErrorStatusCodes = {
   ServiceUnavailable_503: 503,
 } as const;
 
+export const ErrorStatusCodes = {
+  ...ClientErrorStatusCodes,
+  ...ServerErrorStatusCodes,
+} as const;
+
+export type ErrorStatusCode =
+  (typeof ErrorStatusCodes)[keyof typeof ErrorStatusCodes];
+
 export type ServerErrorStatusCode =
   (typeof ServerErrorStatusCodes)[keyof typeof ServerErrorStatusCodes];
 

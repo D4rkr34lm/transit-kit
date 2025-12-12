@@ -8,52 +8,53 @@ import {
 } from "../constants/HttpStatusCodes";
 import { MaybeValue } from "../utils/types";
 
-type ExtractPathParams<Path extends string> =
+export type ExtractPathParams<Path extends string> =
   Path extends `${string}:${infer Param}/${infer Rest}`
-    ? Param | ExtractPathParams<`/${Rest}`>
+    ? {
+        [K in Param | keyof ExtractPathParams<Rest>]: string;
+      }
     : Path extends `${string}:${infer Param}`
-      ? Param
-      : never;
+      ? {
+          [K in Param]: string;
+        }
+      : undefined;
 
 type ResponseSuccessDefinition<
   Code extends SuccessStatusCode,
-  Data extends MaybeValue<"data", z.ZodType>,
+  DataSchema extends z.ZodType,
 > = {
   code: Code;
-} & Data;
+  dataSchema?: DataSchema;
+};
 
 type ResponseErrorDefinition<
-  Msg extends string,
   Code extends ClientErrorStatusCode,
-  Data extends MaybeValue<"data", z.ZodType>,
+  DataSchema extends z.ZodType,
 > = {
   code: Code;
-  message: Msg;
-} & Data;
+  dataSchema?: DataSchema;
+};
 
 export type ApiEndpointDefinition<
   Path extends string,
   Method extends HttpMethod,
-  RequestBodySchema extends MaybeValue<"requestBodySchema", z.ZodType>,
-  QuerySchema extends MaybeValue<"querySchema", z.ZodType>,
-  ResponseBodySchema extends MaybeValue<
-    "successResponseSchema",
-    ResponseSuccessDefinition<SuccessStatusCode, MaybeValue<"data", z.ZodType>>
+  RequestBodySchema extends z.ZodType,
+  QuerySchema extends z.ZodType,
+  SuccessResponseSchema extends ResponseSuccessDefinition<
+    SuccessStatusCode,
+    z.ZodType
   >,
-  PossibleResponseErrors extends Array<
-    ResponseErrorDefinition<
-      string,
-      ClientErrorStatusCode,
-      MaybeValue<"data", z.ZodType>
-    >
+  ErrorResponseSchemas extends Array<
+    ResponseErrorDefinition<ClientErrorStatusCode, z.ZodType>
   >,
 > = {
   path: Path;
   method: Method;
-  possibleResponseErrorSchemas: PossibleResponseErrors;
-} & RequestBodySchema &
-  QuerySchema &
-  ResponseBodySchema;
+  requestBodySchema?: RequestBodySchema;
+  querySchema?: QuerySchema;
+  successResponseSchema: SuccessResponseSchema;
+  errorResponseSchemas: ErrorResponseSchemas;
+};
 
 type HandlerFromDefinition<
   Definition extends ApiEndpointDefinition<

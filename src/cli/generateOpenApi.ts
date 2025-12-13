@@ -11,9 +11,9 @@ import { ZodType } from "zod";
 import { OpenAPIV3 } from "openapi-types";
 import { isJsonResponseSchema } from "../server/handlers/api/responses/jsonResponse";
 
-async function findEndpointDefinitions() {
+async function findEndpointDefinitions(targetPath: string) {
   const files = await glob("**/*.ts", {
-    cwd: process.cwd(),
+    cwd: path.resolve(process.cwd(), targetPath),
     ignore: ["**/node_modules/**", "**/*.spec.ts"],
   });
 
@@ -186,8 +186,8 @@ function translateToOpenAPIPathItem(
   return [openApiPath, pathItem];
 }
 
-export async function generateOpenApiDoc() {
-  const definitions = await findEndpointDefinitions();
+export async function generateOpenApiDoc(targetPath: string) {
+  const definitions = await findEndpointDefinitions(targetPath);
 
   const paths = definitions.reduce<OpenAPIV3.PathsObject>((acc, def) => {
     const [openApiPath, pathItem] = translateToOpenAPIPathItem(def);

@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import z from "zod";
 import { HttpMethod } from "../../constants/HttpMethods";
-import { Prettify } from "../../utils/types";
 import { ApiEndpointDefinition } from "./EndpointDefinition";
 import { ApiEndpointHandler } from "./EndpointHandler";
 import { HandlerForDefinition } from "./HandlerFromDefinition";
@@ -23,11 +22,10 @@ export function createApiEndpointHandler<
     Query,
     ResponsesMap
   >,
-  handler: Prettify<
-    HandlerForDefinition<Path, RequestBody, Query, ResponsesMap>
-  >,
+  handler: HandlerForDefinition<Path, RequestBody, Query, ResponsesMap>,
 ) {
   return {
+    __API_ENDPOINT_DEFINITION__: definition,
     definition,
     handler,
   };

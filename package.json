@@ -17,11 +17,11 @@
   "author": "D4rkr34lm",
   "repository": {
     "type": "git",
-    "url": "https://github.com/D4rkr34lm/declarative-server.git"
+    "url": "https://github.com/D4rkr34lm/transit-kit.git"
   },
-  "homepage": "https://github.com/D4rkr34lm/declarative-server#readme",
+  "homepage": "https://github.com/D4rkr34lm/transit-kit#readme",
   "bugs": {
-    "url": "https://github.com/D4rkr34lm/declarative-server/issues"
+    "url": "https://github.com/D4rkr34lm/transit-kit/issues"
   },
   "files": [
     "dist"

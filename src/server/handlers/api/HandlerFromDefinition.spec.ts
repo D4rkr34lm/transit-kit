@@ -16,7 +16,7 @@ describe("HandlerFromDefinition", () => {
 
     type Expected = (
       request: Request<
-        undefined,
+        {},
         unknown,
         undefined,
         undefined,
@@ -53,7 +53,7 @@ describe("HandlerFromDefinition", () => {
 
     type Expected = (
       request: Request<
-        undefined,
+        {},
         unknown,
         undefined,
         undefined,
@@ -95,7 +95,7 @@ describe("HandlerFromDefinition", () => {
 
     type Expected = (
       request: Request<
-        undefined,
+        {},
         unknown,
         undefined,
         undefined,

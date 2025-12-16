@@ -4,7 +4,7 @@ import { Prettify } from "../../utils/types";
 import { ApiEndpointHandler } from "./EndpointHandler";
 import { ExtractPathParams } from "./PathParameters";
 import { EmptyResponse, EmptyResponseSchema } from "./responses/emptyResponse";
-import { GenericResponseSchemaMap } from "./responses/index";
+import { GenericResponse, GenericResponseSchemaMap } from "./responses/index";
 import {
   JsonResponseSchema,
   JsonResponseSchemaToResponseType,
@@ -27,7 +27,9 @@ export type HandlerForDefinition<
             ? JsonResponseSchemaToResponseType<K, ResponsesMap[K]>
             : ResponsesMap[K] extends EmptyResponseSchema
               ? EmptyResponse<K>
-              : never
+              : ResponsesMap[K] extends undefined
+                ? never
+                : GenericResponse
           : never;
       }[keyof ResponsesMap]
     >,

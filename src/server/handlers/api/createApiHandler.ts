@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import z from "zod";
 import { HttpMethod } from "../../constants/HttpMethods";
+import { Prettify } from "../../utils/types";
 import { ApiEndpointDefinition } from "./EndpointDefinition";
 import { ApiEndpointHandler } from "./EndpointHandler";
 import { HandlerForDefinition } from "./HandlerFromDefinition";
@@ -15,12 +16,8 @@ export function createApiEndpointHandler<
   const RequestBody extends z.ZodType | undefined = undefined,
   const Query extends z.ZodType | undefined = undefined,
 >(
-  definition: ApiEndpointDefinition<
-    Path,
-    Method,
-    RequestBody,
-    Query,
-    ResponsesMap
+  definition: Prettify<
+    ApiEndpointDefinition<Path, Method, RequestBody, Query, ResponsesMap>
   >,
   handler: HandlerForDefinition<Path, RequestBody, Query, ResponsesMap>,
 ) {

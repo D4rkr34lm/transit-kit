@@ -1,11 +1,9 @@
 import cookieParser from "cookie-parser";
 import express, { Application } from "express";
-import z from "zod";
-import { HttpMethod } from "./constants/HttpMethods";
 import { ApiEndpoint } from "./handlers/api/ApiEndpoint";
 import { buildApiEndpointHandler } from "./handlers/api/createApiHandler";
 import { ApiEndpointDefinition } from "./handlers/api/EndpointDefinition";
-import { GenericResponseSchemaMap } from "./handlers/api/responses";
+import { HandlerForDefinition } from "./handlers/api/HandlerFromDefinition";
 import { buildRequestLogger, buildResponseLogger } from "./middleware/logging";
 import {
   buildBodyValidatorMiddleware,
@@ -14,22 +12,27 @@ import {
 import { Logger, NoOpLogger } from "./utils/logging";
 import { hasNoValue, hasValue } from "./utils/typeGuards";
 
-export interface ServerConfig<ApiEndpoints extends ApiEndpoint[]> {
+export interface ServerConfig {
   inDevMode: boolean;
   port: number;
   logger: Logger | boolean;
-  endpoints: ApiEndpoints;
 }
 export interface Server {
   expressApp: Application;
   logger: Logger | boolean;
-  endpointDefinitions: ApiEndpointDefinition<
-    string,
-    HttpMethod,
-    z.ZodType | undefined,
-    z.ZodType | undefined,
-    GenericResponseSchemaMap
-  >[];
+  endpointDefinitions: ApiEndpointDefinition[];
+  registerApiEndpoint<Definition extends ApiEndpointDefinition>({
+    definition,
+    handler,
+  }: {
+    definition: Definition;
+    handler: HandlerForDefinition<
+      Definition["path"],
+      Definition["requestBodySchema"],
+      Definition["querySchema"],
+      Definition["responseSchemas"]
+    >;
+  }): void;
   start: () => void;
 }
 
@@ -52,10 +55,8 @@ function registerApiEndpoint<Endpoint extends ApiEndpoint>(
   expressApp[definition.method](definition.path, handlerStack);
 }
 
-export function createServer<ApiEndpoints extends ApiEndpoint[]>(
-  config: ServerConfig<ApiEndpoints>,
-): Server {
-  const { port, inDevMode, endpoints } = config;
+export function createServer(config: ServerConfig): Server {
+  const { port, inDevMode } = config;
 
   const logger: Logger =
     config.logger === true
@@ -73,15 +74,14 @@ export function createServer<ApiEndpoints extends ApiEndpoint[]>(
   app.use(buildRequestLogger(logger, inDevMode));
   app.use(buildResponseLogger(logger, inDevMode));
 
-  endpoints.forEach((endpoint) => {
-    registerApiEndpoint(app, endpoint);
-  });
-
   return {
     expressApp: app,
     logger: logger,
-    endpointDefinitions: endpoints.map((e) => e.definition),
-    start: () => {
+    endpointDefinitions: [],
+    registerApiEndpoint(endpoint) {
+      registerApiEndpoint(app, endpoint);
+    },
+    start() {
       app.listen(port);
     },
   };

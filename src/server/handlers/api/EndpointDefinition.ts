@@ -9,11 +9,11 @@ export interface ApiEndpointMeta {
 }
 
 export type ApiEndpointDefinition<
-  Path extends string,
-  Method extends HttpMethod,
-  RequestBody extends z.ZodType | undefined,
-  Query extends z.ZodType | undefined,
-  ResponseMap extends GenericResponseSchemaMap,
+  Path extends string = string,
+  Method extends HttpMethod = HttpMethod,
+  RequestBody extends z.ZodType | undefined = z.ZodType | undefined,
+  Query extends z.ZodType | undefined = z.ZodType | undefined,
+  ResponseMap extends GenericResponseSchemaMap = GenericResponseSchemaMap,
 > = {
   meta: ApiEndpointMeta;
   path: Path;

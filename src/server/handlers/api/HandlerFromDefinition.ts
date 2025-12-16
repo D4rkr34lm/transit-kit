@@ -19,8 +19,8 @@ export type HandlerForDefinition<
   ExtractPathParams<Path>,
   RequestBody extends undefined ? undefined : z.infer<RequestBody>,
   Query extends undefined ? undefined : z.infer<Query>,
-  Prettify<
-    Exclude<
+  Exclude<
+    Prettify<
       {
         [K in keyof ResponsesMap]: K extends HttpStatusCode
           ? ResponsesMap[K] extends JsonResponseSchema
@@ -29,8 +29,8 @@ export type HandlerForDefinition<
               ? EmptyResponse<K>
               : never
           : never;
-      }[keyof ResponsesMap],
-      undefined
-    >
+      }[keyof ResponsesMap]
+    >,
+    undefined
   >
 >;

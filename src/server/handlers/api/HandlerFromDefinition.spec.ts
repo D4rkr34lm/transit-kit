@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 import { describe, expectTypeOf, it } from "vitest";
 import z from "zod";
 import { BasicAuthScheme } from "../../security/basicAuth";
@@ -16,21 +16,20 @@ describe("HandlerFromDefinition", () => {
       }
     >;
 
-    type Expected = (
+    type Expected = (typedRequestData: {
       request: Request<
         {},
         unknown,
         undefined,
         undefined,
         Record<string, unknown>
-      >,
-      extractedRequestData: {
-        parameters: {};
-        query: undefined;
-        body: undefined;
-        caller: unknown;
-      },
-    ) => Promise<
+      >;
+      response: Response<unknown>;
+      parameters: {};
+      query: undefined;
+      body: undefined;
+      caller: unknown;
+    }) => Promise<
       | {
           code: 200;
         }
@@ -59,21 +58,20 @@ describe("HandlerFromDefinition", () => {
       }
     >;
 
-    type Expected = (
+    type Expected = (typedRequestData: {
       request: Request<
         {},
         unknown,
         undefined,
         undefined,
         Record<string, unknown>
-      >,
-      extractedRequestData: {
-        parameters: {};
-        query: undefined;
-        body: undefined;
-        caller: unknown;
-      },
-    ) => Promise<
+      >;
+      response: Response<unknown>;
+      parameters: {};
+      query: undefined;
+      body: undefined;
+      caller: unknown;
+    }) => Promise<
       | {
           code: 200;
           dataType: "application/json";
@@ -107,21 +105,20 @@ describe("HandlerFromDefinition", () => {
       }
     >;
 
-    type Expected = (
+    type Expected = (typedRequestData: {
       request: Request<
         {},
         unknown,
         undefined,
         undefined,
         Record<string, unknown>
-      >,
-      extractedRequestData: {
-        parameters: {};
-        query: undefined;
-        body: undefined;
-        caller: unknown;
-      },
-    ) => Promise<
+      >;
+      response: Response<unknown>;
+      parameters: {};
+      query: undefined;
+      body: undefined;
+      caller: unknown;
+    }) => Promise<
       | {
           code: 200;
           dataType: "application/json";
@@ -153,21 +150,20 @@ describe("HandlerFromDefinition", () => {
       [BasicAuthScheme<Caller>]
     >;
 
-    type Expected = (
+    type Expected = (typedRequestData: {
       request: Request<
         {},
         unknown,
         undefined,
         undefined,
         Record<string, unknown>
-      >,
-      extractedRequestData: {
-        parameters: {};
-        query: undefined;
-        body: undefined;
-        caller: Caller;
-      },
-    ) => Promise<
+      >;
+      response: Response<unknown>;
+      parameters: {};
+      query: undefined;
+      body: undefined;
+      caller: Caller;
+    }) => Promise<
       | {
           code: 200;
         }
@@ -194,21 +190,20 @@ describe("HandlerFromDefinition", () => {
       [BearerAuthScheme<Caller>]
     >;
 
-    type Expected = (
+    type Expected = (typedRequestData: {
       request: Request<
         {},
         unknown,
         undefined,
         undefined,
         Record<string, unknown>
-      >,
-      extractedRequestData: {
-        parameters: {};
-        query: undefined;
-        body: undefined;
-        caller: Caller;
-      },
-    ) => Promise<
+      >;
+      response: Response<unknown>;
+      parameters: {};
+      query: undefined;
+      body: undefined;
+      caller: Caller;
+    }) => Promise<
       | {
           code: 200;
         }

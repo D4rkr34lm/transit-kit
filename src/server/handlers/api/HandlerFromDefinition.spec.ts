@@ -22,6 +22,12 @@ describe("HandlerFromDefinition", () => {
         undefined,
         Record<string, unknown>
       >,
+      extractedRequestData: {
+        parameters: {};
+        query: undefined;
+        body: undefined;
+        caller: unknown;
+      },
     ) => Promise<
       | {
           code: 200;
@@ -59,6 +65,12 @@ describe("HandlerFromDefinition", () => {
         undefined,
         Record<string, unknown>
       >,
+      extractedRequestData: {
+        parameters: {};
+        query: undefined;
+        body: undefined;
+        caller: unknown;
+      },
     ) => Promise<
       | {
           code: 200;
@@ -101,6 +113,12 @@ describe("HandlerFromDefinition", () => {
         undefined,
         Record<string, unknown>
       >,
+      extractedRequestData: {
+        parameters: {};
+        query: undefined;
+        body: undefined;
+        caller: unknown;
+      },
     ) => Promise<
       | {
           code: 200;

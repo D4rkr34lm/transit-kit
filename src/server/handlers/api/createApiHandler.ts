@@ -52,16 +52,14 @@ export function buildApiEndpointHandler<
   >,
 >(handler: Handler) {
   return expressAsyncHandler(async (request: Request, response: Response) => {
-    const caller = response.locals.caller;
-
-    const extractedRequestData = {
+    const result = await handler({
+      request,
+      response,
       parameters: request.params,
       query: request.query,
       body: request.body,
-      caller,
-    };
-
-    const result = await handler(request, extractedRequestData);
+      caller: response.locals.caller,
+    });
 
     if (isJsonResponse(result)) {
       response.status(result.code).json(result.json);

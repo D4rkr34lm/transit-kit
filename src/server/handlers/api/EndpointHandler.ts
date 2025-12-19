@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 
 import { HttpStatusCodes } from "../../constants/HttpStatusCodes";
 import { GenericResponse } from "./responses";
@@ -9,21 +9,20 @@ export type ApiEndpointHandler<
   Query = unknown,
   Responses extends GenericResponse = never,
   Caller = unknown,
-> = (
+> = (typedRequestData: {
   request: Request<
     PathParams,
     unknown,
     RequestBody,
     Query,
     Record<string, unknown>
-  >,
-  extractedRequestData: {
-    parameters: PathParams;
-    query: Query;
-    body: RequestBody;
-    caller: Caller;
-  },
-) => Promise<
+  >;
+  response: Response<unknown>;
+  parameters: PathParams;
+  query: Query;
+  body: RequestBody;
+  caller: Caller;
+}) => Promise<
   | Responses
   | {
       code: (typeof HttpStatusCodes)["InternalServerError_500"];

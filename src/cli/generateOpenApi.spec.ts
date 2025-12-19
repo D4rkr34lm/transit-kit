@@ -25,11 +25,11 @@ describe("translateToOpenAPIPathItem", () => {
           },
         },
       },
-      async (req) => {
+      async ({ request }) => {
         return {
           code: 200,
           dataType: "application/json",
-          json: req.params.id,
+          json: request.params.id,
         };
       },
     );

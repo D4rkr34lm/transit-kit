@@ -1,5 +1,6 @@
 import z from "zod";
 import { HttpMethod } from "../../constants/HttpMethods";
+import { SecurityScheme } from "../../security/SecuritySchema";
 import { GenericResponseSchemaMap } from "./responses/index";
 
 export interface ApiEndpointMeta {
@@ -14,6 +15,7 @@ export type ApiEndpointDefinition<
   RequestBody extends z.ZodType | undefined = z.ZodType | undefined,
   Query extends z.ZodType | undefined = z.ZodType | undefined,
   ResponseMap extends GenericResponseSchemaMap = GenericResponseSchemaMap,
+  SecuritySchemes extends SecurityScheme<unknown>[] = [],
 > = {
   meta: ApiEndpointMeta;
   path: Path;
@@ -21,4 +23,5 @@ export type ApiEndpointDefinition<
   requestBodySchema?: RequestBody;
   querySchema?: Query;
   responseSchemas: ResponseMap;
+  securitySchemes?: SecuritySchemes;
 };

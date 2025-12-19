@@ -8,6 +8,7 @@ export type ApiEndpointHandler<
   RequestBody = unknown,
   Query = unknown,
   Responses extends GenericResponse = never,
+  Caller = unknown,
 > = (
   request: Request<
     PathParams,
@@ -16,6 +17,12 @@ export type ApiEndpointHandler<
     Query,
     Record<string, unknown>
   >,
+  extractedRequestData: {
+    parameters: PathParams;
+    query: Query;
+    body: RequestBody;
+    caller: Caller;
+  },
 ) => Promise<
   | Responses
   | {

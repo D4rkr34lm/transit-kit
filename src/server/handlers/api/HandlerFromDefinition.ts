@@ -1,5 +1,6 @@
 import z from "zod";
 import { HttpStatusCode } from "../../constants/HttpStatusCodes";
+import { SecurityScheme } from "../../security/SecuritySchema";
 import { Prettify } from "../../utils/types";
 import { ApiEndpointHandler } from "./EndpointHandler";
 import { ExtractPathParams } from "./PathParameters";
@@ -15,6 +16,7 @@ export type HandlerForDefinition<
   RequestBody extends z.ZodType | undefined,
   Query extends z.ZodType | undefined,
   ResponsesMap extends GenericResponseSchemaMap,
+  SecuritySchemas extends SecurityScheme<unknown>[] = [],
 > = ApiEndpointHandler<
   ExtractPathParams<Path>,
   RequestBody extends undefined ? undefined : z.infer<RequestBody>,
@@ -34,5 +36,6 @@ export type HandlerForDefinition<
       }[keyof ResponsesMap]
     >,
     undefined
-  >
+  >,
+  SecuritySchemas extends SecurityScheme<infer Caller>[] ? Caller : unknown
 >;

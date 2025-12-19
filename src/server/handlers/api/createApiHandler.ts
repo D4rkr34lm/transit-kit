@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import z from "zod";
 import { HttpMethod } from "../../constants/HttpMethods";
+import { SecurityScheme } from "../../security/SecuritySchema";
 import { Prettify } from "../../utils/types";
 import { ApiEndpointDefinition } from "./EndpointDefinition";
 import { ApiEndpointHandler } from "./EndpointHandler";
@@ -15,9 +16,17 @@ export function createApiEndpointHandler<
   const Method extends HttpMethod,
   const RequestBody extends z.ZodType | undefined = undefined,
   const Query extends z.ZodType | undefined = undefined,
+  const SecuritySchemas extends SecurityScheme<unknown>[] = [],
 >(
   definition: Prettify<
-    ApiEndpointDefinition<Path, Method, RequestBody, Query, ResponsesMap>
+    ApiEndpointDefinition<
+      Path,
+      Method,
+      RequestBody,
+      Query,
+      ResponsesMap,
+      SecuritySchemas
+    >
   >,
   handler: HandlerForDefinition<Path, RequestBody, Query, ResponsesMap>,
 ) {
@@ -36,7 +45,16 @@ export function buildApiEndpointHandler<
   >,
 >(handler: Handler) {
   return expressAsyncHandler(async (request: Request, response: Response) => {
-    const result = await handler(request);
+    const caller = response.locals.caller;
+
+    const extractedRequestData = {
+      parameters: request.params,
+      query: request.query,
+      body: request.body,
+      caller,
+    };
+
+    const result = await handler(request, extractedRequestData);
 
     if (isJsonResponse(result)) {
       response.status(result.code).json(result.json);

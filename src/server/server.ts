@@ -4,11 +4,13 @@ import { ApiEndpoint } from "./handlers/api/ApiEndpoint";
 import { buildApiEndpointHandler } from "./handlers/api/createApiHandler";
 import { ApiEndpointDefinition } from "./handlers/api/EndpointDefinition";
 import { HandlerForDefinition } from "./handlers/api/HandlerFromDefinition";
+import { buildAuthenticationMiddleware } from "./middleware/auth";
 import { buildRequestLogger, buildResponseLogger } from "./middleware/logging";
 import {
   buildBodyValidatorMiddleware,
   buildQueryValidatorMiddleware,
 } from "./middleware/validation";
+import { isEmpty } from "./utils/funcs";
 import { Logger, NoOpLogger } from "./utils/logging";
 import { hasNoValue, hasValue } from "./utils/typeGuards";
 
@@ -43,6 +45,9 @@ function registerApiEndpoint<Endpoint extends ApiEndpoint>(
   const { definition, handler } = endpoint;
 
   const handlerStack = [
+    hasValue(definition.securitySchemes) && !isEmpty(definition.securitySchemes)
+      ? buildAuthenticationMiddleware(definition.securitySchemes)
+      : null,
     hasValue(definition.querySchema)
       ? buildQueryValidatorMiddleware(definition.querySchema)
       : null,

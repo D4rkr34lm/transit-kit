@@ -57,6 +57,7 @@ describe("translateToOpenAPIPathItem", () => {
             schema: { type: "string" },
           },
         ],
+        security: [],
         responses: {
           "200": {
             description: "Response for status code 200",

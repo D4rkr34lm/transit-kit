@@ -7,7 +7,7 @@ import { hasValue } from "../server/utils/typeGuards";
 import { ZodType } from "zod";
 
 import { OpenAPIV3 } from "openapi-types";
-import path from "path";
+import { Server } from "../server";
 import { isJsonResponseSchema } from "../server/handlers/api/responses/jsonResponse";
 
 function extractPathAndParameters(path: string): {
@@ -197,62 +197,50 @@ function extractSecuritySchemes(
   }, {});
 }
 
-export async function generateOpenApiDoc(targetPath: string) {
-  const serverModule = await import(path.resolve(process.cwd(), targetPath));
+interface GeneratorOptions {
+  title: string;
+  version: string;
+}
 
-  const server = serverModule.default;
+export async function generateOpenApiDoc(
+  server: Server,
+  options: GeneratorOptions,
+): Promise<OpenAPIV3.Document> {
+  const endpointDefinitions = server.endpointDefinitions;
 
-  if (
-    hasValue(server) &&
-    hasValue(server.endpointDefinitions) &&
-    Array.isArray(server.endpointDefinitions)
-  ) {
-    const endpointDefinitions: ApiEndpointDefinition<
-      string,
-      HttpMethod,
-      ZodType,
-      ZodType,
-      GenericResponseSchemaMap
-    >[] = server.endpointDefinitions;
+  const paths = endpointDefinitions.reduce<OpenAPIV3.PathsObject>(
+    (acc, def) => {
+      const [openApiPath, pathItem] = translateToOpenAPIPathItem(def);
 
-    const paths = endpointDefinitions.reduce<OpenAPIV3.PathsObject>(
-      (acc, def) => {
-        const [openApiPath, pathItem] = translateToOpenAPIPathItem(def);
+      if (acc[openApiPath]) {
+        acc[openApiPath] = {
+          ...acc[openApiPath],
+          ...pathItem,
+        };
+      } else {
+        acc[openApiPath] = pathItem;
+      }
 
-        if (acc[openApiPath]) {
-          acc[openApiPath] = {
-            ...acc[openApiPath],
-            ...pathItem,
-          };
-        } else {
-          acc[openApiPath] = pathItem;
-        }
+      return acc;
+    },
+    {},
+  );
 
-        return acc;
-      },
-      {},
-    );
+  const securitySchemes = extractSecuritySchemes(endpointDefinitions);
 
-    const securitySchemes = extractSecuritySchemes(endpointDefinitions);
+  const openApiDocument: OpenAPIV3.Document = {
+    openapi: "3.0.0",
+    info: {
+      title: options.title,
+      version: options.version,
+    },
+    paths: paths,
+    components: {
+      securitySchemes,
+    },
+  };
 
-    const openApiDocument: OpenAPIV3.Document = {
-      openapi: "3.0.0",
-      info: {
-        title: "Generated API",
-        version: "1.0.0",
-      },
-      paths: paths,
-      components: {
-        securitySchemes,
-      },
-    };
-
-    return openApiDocument;
-  } else {
-    throw new Error(
-      "The specified module does not export a valid server instance.",
-    );
-  }
+  return openApiDocument;
 }
 
 export const __TEST_EXPORTS = {

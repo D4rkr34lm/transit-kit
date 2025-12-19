@@ -1,0 +1,1 @@
+export { generateOpenApiDoc } from "./generateOpenApi";

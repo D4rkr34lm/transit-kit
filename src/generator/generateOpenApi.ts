@@ -196,6 +196,10 @@ function extractSecuritySchemes(
 interface GeneratorOptions {
   title: string;
   version: string;
+  description?: string;
+  servers?: OpenAPIV3.ServerObject[];
+  contact?: OpenAPIV3.ContactObject;
+  license?: OpenAPIV3.LicenseObject;
 }
 
 export async function generateOpenApiDoc(
@@ -229,7 +233,11 @@ export async function generateOpenApiDoc(
     info: {
       title: options.title,
       version: options.version,
+      description: options.description,
+      license: options.license,
+      contact: options.contact,
     },
+    servers: options.servers ?? [],
     paths: paths,
     components: {
       securitySchemes,
